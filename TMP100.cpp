@@ -59,38 +59,43 @@ void TMP100::init(unsigned char res)
  
 /**  Get the temperature in degC*E-4
  *
+ *   Parameters:
+ *   long & 		       temperature in degC*E-4
+ *
+ *
  *	 Returns
- *	 long					temperature in degC*E-4
+ * 	 unsigned char         0 success
+ *                         1 fail
  *
  *   Note:
  *	 Return is in long and degC*E-4 to prevent usage of float datatype
  * 
  */
- long TMP100::getTemperature()
+ unsigned char TMP100::getTemperature(long &t)
  {
 	unsigned short adc_code = -1;
-	long temp;
+	unsigned char ret;
 	
-	adc_code = readRegister(TEMP_REG);
+	ret = readRegister(TEMP_REG, adc_code);
 	
 	if (mul == MUL_12_bit)
 	{
-		temp = (long)(adc_code >> 4) * mul;		//first 4 LSB is 0
+		t = (long)(adc_code >> 4) * mul;		//first 4 LSB is 0
 	}
 	else if (mul == MUL_11_bit)
 	{
-		temp = (long)(adc_code >> 5) * mul;		//first 5 LSB is 0
+		t = (long)(adc_code >> 5) * mul;		//first 5 LSB is 0
 	}
 	else if (mul == MUL_10_bit)
 	{
-		temp = (long)(adc_code >> 6) * mul;		//first 6 LSB is 0
+		t = (long)(adc_code >> 6) * mul;		//first 6 LSB is 0
 	}
 	else if (mul == MUL_9_bit)
 	{
-		temp = (long)(adc_code >> 7) * mul;		//first 7 LSB is 0
+		t = (long)(adc_code >> 7) * mul;		//first 7 LSB is 0
 	}
 	
-	return temp;
+	return ret;
  }
  
 
@@ -100,25 +105,31 @@ void TMP100::init(unsigned char res)
  *
  *   Parameters:
  *   unsigned char reg     register number
+ *   unsigned short &      register value
+ *
  *
  *   Returns:
- *   unsigned short         register value
+ *   unsigned char         0 success
+ *                         1 fail
  *
  */
-unsigned short TMP100::readRegister(unsigned char reg)
+unsigned char TMP100::readRegister(unsigned char reg, unsigned short &output)
 {
-    unsigned short ret = -1;
+    output = -1;
     wire.beginTransmission(address);
     wire.write(reg);
 	
     unsigned char res = wire.requestFrom(address, 2);
     if (res == 2)
     {
-		((unsigned char*)&ret)[1] = wire.read();
-		((unsigned char*)&ret)[0] = wire.read();
+		((unsigned char*)&output)[1] = wire.read();
+		((unsigned char*)&output)[0] = wire.read();
+		return 0;
     }
-
-    return ret;
+	else
+	{
+		return 1;
+	}
 }
 
 
@@ -128,11 +139,15 @@ unsigned short TMP100::readRegister(unsigned char reg)
  *   unsigned char reg     register number
  *   unsigned char val     register value
  *
+ *   Returns:
+ *   unsigned char         0 success
+ *                         1 fail
+ *
  */
-void TMP100::writeRegister(unsigned char reg, unsigned char val)
+unsigned char TMP100::writeRegister(unsigned char reg, unsigned char val)
 {
     wire.beginTransmission(address);
     wire.write(reg);
     wire.write(val & 0xFF);      
-    wire.endTransmission();
+    return wire.endTransmission();
 }

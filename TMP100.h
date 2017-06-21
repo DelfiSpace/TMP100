@@ -69,12 +69,12 @@ public:
 	virtual ~TMP100( ) {};
 	
 	void init(unsigned char res);
-	long getTemperature();
+	unsigned char getTemperature(long &t);
 	
 	
 	// read and write from the register
-	unsigned short readRegister(unsigned char reg);
-	void writeRegister(unsigned char reg, unsigned char val);
+	unsigned char readRegister(unsigned char reg, unsigned short &output);
+	unsigned char writeRegister(unsigned char reg, unsigned char val);
 	
 private:	
 	
