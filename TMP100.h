@@ -43,7 +43,10 @@
 #define TMP100_RESOLUTION_11_BIT			0x40		//0.125 degC
 #define TMP100_RESOLUTION_12_BIT			0x60		//0.0625 degC
 
-void tmp_init(dev_id id, uint16_t *mul, uint8_t res);
-uint8_t tmp_getTemperature(const dev_id id, const uint16_t mul, int32_t *res);
+void tmp_init(dev_id id);
+uint8_t tmp_getRawTemperature(const dev_id id,
+                               const int16_t raw,
+                               float *res);
+uint8_t tmp_getTemperature_raw(const dev_id id, int16_t *res);
 
 #endif  // TMP100_H

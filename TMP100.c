@@ -44,7 +44,7 @@
  uint8_t tmp_readRegister(dev_id id, uint8_t reg, uint16_t *res)
  {
 
-   HAL_I2C_readWrite(id, &reg, 1, res, 1);
+   HAL_I2C_readWrite(id, &reg, 1, res, 2);
 
    return 0;
  }
@@ -76,29 +76,11 @@
  *   unsigned char res		User defined resolution (9, 10, 11 or 12 bit)
  *
  */
-void tmp_init(dev_id id, uint16_t *mul, uint8_t res)
+void tmp_init(dev_id id)
 {
-	//default mode: disable shutdown, comparator mode, active low, 1 consecutive fault
-	tmp_writeRegister(id, CONFIG_REG, res);
+	//default mode: disable shutdown, 12 bits, comparator mode, active low, 6 consecutive fault
+  tmp_writeRegister(id, CONFIG_REG, 0x78);
 
-	switch(res)
-	{
-  	case TMP100_RESOLUTION_9_BIT:
-    	*mul = MUL_9_bit;
-    	break;
-
-  	case TMP100_RESOLUTION_10_BIT:
-    	*mul = MUL_10_bit;
-    	break;
-
-  	case TMP100_RESOLUTION_11_BIT:
-    	*mul = MUL_11_bit;
-    	break;
-
-  	case TMP100_RESOLUTION_12_BIT:
-    	*mul = MUL_12_bit;
-    	break;
-	}
 }
 
 /**  Get the temperature in degC*E-4
@@ -115,29 +97,21 @@ void tmp_init(dev_id id, uint16_t *mul, uint8_t res)
  *	 Return is in long and degC*E-4 to prevent usage of float datatype
  *
  */
-uint8_t tmp_getTemperature(const dev_id id,
-                              const uint16_t mul,
-                              int32_t *res) {
-	uint16_t adc_code = -1;
-  uint8_t shift = 0;
+uint8_t tmp_getTemperature_raw(const dev_id id, int16_t *res) {
+	int16_t adc_code = -1;
+
 
 	tmp_readRegister(id, TEMP_REG, &adc_code);
 
-	if (mul == MUL_12_bit) {
-		shift = 4;			//first 4 LSB is 0
-	} else if (mul == MUL_11_bit) {
-		shift = 5;			//first 5 LSB is 0
-	} else if (mul == MUL_10_bit) {
-		shift = 6;			//first 6 LSB is 0
-	} else if (mul == MUL_9_bit) {
-		shift = 7;		//first 7 LSB is 0
-	} else {
-    return 1;
-  }
-
-  *res = (int32_t)(adc_code >> shift) * mul;
+  *res = (int16_t)adc_code >> 4;
 
 	return 0;
  }
 
+ uint8_t tmp_getRawTemperature(const dev_id id,
+                                const int16_t raw,
+                                float *res) {
 
+  *res = (float)raw * 0.0625;
+ 	return 0;
+}
