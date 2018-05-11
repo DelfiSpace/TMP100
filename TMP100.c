@@ -46,6 +46,11 @@
 
    HAL_I2C_readWrite(id, &reg, 1, res, 2);
 
+   uint16_t temp;
+   temp = *res;
+   *res = ((0x00ff & temp) << 8);
+   *res |= (temp >> 8);
+
    return 0;
  }
 
