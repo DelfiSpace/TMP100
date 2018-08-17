@@ -47,6 +47,6 @@ void tmp_init(dev_id id);
 uint8_t tmp_getRawTemperature(const dev_id id,
                                const int16_t raw,
                                float *res);
-uint8_t tmp_getTemperature_raw(const dev_id id, int16_t *res);
+bool tmp_getTemperature_raw(const dev_id id, int16_t *res);
 
 #endif  // TMP100_H

@@ -13,7 +13,7 @@
  */
 
  #include "TMP100.h"
- #include "hal_uart.h"
+ #include "hal_functions.h"
 
  //Internal Register Address
  #define TEMP_REG					        0x00
@@ -41,17 +41,17 @@
   *                         1 fail
   *
   */
- uint8_t tmp_readRegister(dev_id id, uint8_t reg, uint16_t *res)
+ bool tmp_readRegister(dev_id id, uint8_t reg, uint16_t *res)
  {
 
-   HAL_I2C_readWrite(id, &reg, 1, res, 2);
+   bool res1 = HAL_I2C_readWrite(id, &reg, 1, res, 2);
 
    uint16_t temp;
    temp = *res;
    *res = ((0x00ff & temp) << 8);
    *res |= (temp >> 8);
 
-   return 0;
+   return res1;
  }
 
 
@@ -66,12 +66,14 @@
   *                         1 fail
   *
   */
- uint8_t tmp_writeRegister(dev_id id, uint8_t reg, uint8_t val)
+ bool tmp_writeRegister(dev_id id, uint8_t reg, uint8_t val)
  {
 
      uint8_t tx_buf[2] = { reg, val };
 
-     HAL_I2C_readWrite(id, tx_buf, 2, NULL, 0);
+     bool res = HAL_I2C_readWrite(id, tx_buf, 2, NULL, 0);
+
+     return res;
  }
 
 
@@ -102,15 +104,15 @@ void tmp_init(dev_id id)
  *	 Return is in long and degC*E-4 to prevent usage of float datatype
  *
  */
-uint8_t tmp_getTemperature_raw(const dev_id id, int16_t *res) {
+bool tmp_getTemperature_raw(const dev_id id, int16_t *res) {
 	int16_t adc_code = -1;
 
 
-	tmp_readRegister(id, TEMP_REG, &adc_code);
+	bool res1 = tmp_readRegister(id, TEMP_REG, &adc_code);
 
   *res = (int16_t)adc_code >> 4;
 
-	return 0;
+	return res1;
  }
 
  uint8_t tmp_getRawTemperature(const dev_id id,
