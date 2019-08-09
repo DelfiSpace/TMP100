@@ -15,8 +15,7 @@
 #ifndef TMP100_H
 #define TMP100_H
 
-#include <Energia.h>
-#include <DWire.h>
+#include "DWire.h"
 
 //Internal Register Address
 #define TEMP_REG					0x00
@@ -79,8 +78,5 @@ public:
 private:	
 	
 };
-
-
-
 
 #endif  // TMP100_H
