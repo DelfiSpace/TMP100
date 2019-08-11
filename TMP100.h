@@ -15,6 +15,7 @@
 #ifndef TMP100_H
 #define TMP100_H
 
+#include <limits.h>
 #include "DWire.h"
 
 //Internal Register Address
@@ -68,7 +69,7 @@ public:
 	virtual ~TMP100( ) {};
 	
 	void init(unsigned char res);
-	unsigned char getTemperature(long &t);
+	unsigned char getTemperature(signed short &t);
 	
 	
 	// read and write from the register

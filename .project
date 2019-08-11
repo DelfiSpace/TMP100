@@ -3,6 +3,7 @@
 	<name>TMP100</name>
 	<comment></comment>
 	<projects>
+		<project>DWire</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

@@ -60,7 +60,7 @@ void TMP100::init(unsigned char res)
 /**  Get the temperature in degC*E-4
  *
  *   Parameters:
- *   long & 		       temperature in degC*E-4
+ *   long & 		       temperature in units of 0.1 degC
  *
  *
  *	 Returns
@@ -71,30 +71,36 @@ void TMP100::init(unsigned char res)
  *	 Return is in long and degC*E-4 to prevent usage of float datatype
  * 
  */
- unsigned char TMP100::getTemperature(long &t)
+ unsigned char TMP100::getTemperature(signed short &t)
  {
-	unsigned short adc_code = -1;
-	unsigned char ret;
+	unsigned short adc_code;
 	
-	ret = readRegister(TEMP_REG, adc_code);
+	unsigned char ret = readRegister(TEMP_REG, adc_code);
 	
-	if (mul == MUL_12_bit)
+	if (!ret)
 	{
-		t = (long)(adc_code >> 4) * mul;		//first 4 LSB is 0
+	    t = ((adc_code >> 4) + (adc_code >> 7) >> 1);
+	    /*if (mul == MUL_12_bit)
+        {
+            t = (long)(adc_code >> 4) * mul;        //first 4 LSB is 0
+        }
+        else if (mul == MUL_11_bit)
+        {
+            t = (long)(adc_code >> 5) * mul;        //first 5 LSB is 0
+        }
+        else if (mul == MUL_10_bit)
+        {
+            t = (long)(adc_code >> 6) * mul;        //first 6 LSB is 0
+        }
+        else if (mul == MUL_9_bit)
+        {
+            t = (long)(adc_code >> 7) * mul;        //first 7 LSB is 0
+        }*/
 	}
-	else if (mul == MUL_11_bit)
+	else
 	{
-		t = (long)(adc_code >> 5) * mul;		//first 5 LSB is 0
+	    t = SHRT_MAX;
 	}
-	else if (mul == MUL_10_bit)
-	{
-		t = (long)(adc_code >> 6) * mul;		//first 6 LSB is 0
-	}
-	else if (mul == MUL_9_bit)
-	{
-		t = (long)(adc_code >> 7) * mul;		//first 7 LSB is 0
-	}
-	
 	return ret;
  }
  
@@ -115,7 +121,6 @@ void TMP100::init(unsigned char res)
  */
 unsigned char TMP100::readRegister(unsigned char reg, unsigned short &output)
 {
-    output = -1;
     wire.beginTransmission(address);
     wire.write(reg);
 	
@@ -128,6 +133,7 @@ unsigned char TMP100::readRegister(unsigned char reg, unsigned short &output)
     }
 	else
 	{
+	    output = 0;
 		return 1;
 	}
 }
