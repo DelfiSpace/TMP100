@@ -28,48 +28,25 @@ TMP100::TMP100(DWire &i2c, unsigned char addr): wire(i2c)
 
 /**  Initialise the value of config register
  *
- *   Parameters:
- *   unsigned char res		User defined resolution (9, 10, 11 or 12 bit)
- *
  */
-void TMP100::init(unsigned char res)
+void TMP100::init()
 {
-	//default mode: disable shutdown, comparator mode, active low, 1 consecutive fault
-	writeRegister(CONFIG_REG, res);	 
-
-	switch(res)
-	{
-	case RESOLUTION_9_BIT:
-	mul = MUL_9_bit;
-	break;
-	
-	case RESOLUTION_10_BIT:
-	mul = MUL_10_bit;
-	break;
-	
-	case RESOLUTION_11_BIT:
-	mul = MUL_11_bit;
-	break;
-	
-	case RESOLUTION_12_BIT:
-	mul = MUL_12_bit;
-	break;
-	}
+	// default mode: disable shutdown, comparator mode, active low, 1 consecutive fault
+    // 12 bit resolution
+	writeRegister(CONFIG_REG, RESOLUTION_12_BIT);
 }
  
-/**  Get the temperature in degC*E-4
+/**  Get the temperature in degC * E-1
  *
  *   Parameters:
- *   long & 		       temperature in units of 0.1 degC
+ *   long & 		                temperature in units of 0.1 degC
+ *                                  SHRT_MAX in case of failure
  *
  *
  *	 Returns
  * 	 unsigned char         0 success
  *                         1 fail
  *
- *   Note:
- *	 Return is in long and degC*E-4 to prevent usage of float datatype
- * 
  */
  unsigned char TMP100::getTemperature(signed short &t)
  {
@@ -80,22 +57,6 @@ void TMP100::init(unsigned char res)
 	if (!ret)
 	{
 	    t = ((adc_code >> 4) + (adc_code >> 7) >> 1);
-	    /*if (mul == MUL_12_bit)
-        {
-            t = (long)(adc_code >> 4) * mul;        //first 4 LSB is 0
-        }
-        else if (mul == MUL_11_bit)
-        {
-            t = (long)(adc_code >> 5) * mul;        //first 5 LSB is 0
-        }
-        else if (mul == MUL_10_bit)
-        {
-            t = (long)(adc_code >> 6) * mul;        //first 6 LSB is 0
-        }
-        else if (mul == MUL_9_bit)
-        {
-            t = (long)(adc_code >> 7) * mul;        //first 7 LSB is 0
-        }*/
 	}
 	else
 	{

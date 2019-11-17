@@ -56,28 +56,23 @@
 # define	MUL_12_bit				625
 
 class TMP100
-
 {
 protected:	
 	DWire &wire;
     unsigned char address;
-	unsigned short mul;
 
 public:
 	
-	TMP100(DWire &i2c, unsigned char addr);
+	TMP100( DWire &i2c, unsigned char addr );
 	virtual ~TMP100( ) {};
 	
-	void init(unsigned char res);
-	unsigned char getTemperature(signed short &t);
-	
-	
-	// read and write from the register
-	unsigned char readRegister(unsigned char reg, unsigned short &output);
-	unsigned char writeRegister(unsigned char reg, unsigned char val);
+	void init(  );
+	unsigned char getTemperature( signed short &t );
 	
 private:	
-	
+    // read and write from the register
+    unsigned char readRegister( unsigned char reg, unsigned short &output );
+    unsigned char writeRegister( unsigned char reg, unsigned char val );
 };
 
 #endif  // TMP100_H
