@@ -3,7 +3,6 @@
    code written by J.W.Chia @ 6/3/2017
 */
 
-#include <Arduino.h>
 #include <DWire.h>
 #include <DSerial.h>
 #include <TMP100.h>
