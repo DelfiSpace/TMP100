@@ -26,7 +26,7 @@ TMP100::TMP100(DWire &i2c, unsigned char addr): wire(i2c)
     address = addr;
 }
 
-/**  Initialise the value of config register
+/**  Initialize the value of configuration register
  *
  */
 void TMP100::init()
@@ -64,9 +64,6 @@ void TMP100::init()
 	}
 	return ret;
  }
- 
-
-
 
 /**  Returns the value (2 byte) of the selected internal register
  *
@@ -98,7 +95,6 @@ unsigned char TMP100::readRegister(unsigned char reg, unsigned short &output)
 		return 1;
 	}
 }
-
 
 /**  Set the value (1 byte) of the selected internal register
  *   
