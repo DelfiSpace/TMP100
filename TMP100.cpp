@@ -50,19 +50,29 @@ void TMP100::init()
  */
  unsigned char TMP100::getTemperature(signed short &t)
  {
-	unsigned short adc_code;
-	
-	unsigned char ret = readRegister(TEMP_REG, adc_code);
-	
+    unsigned short adc_code;
+
+    unsigned char ret = readRegister(TEMP_REG, adc_code);
+
+    t = (adc_code >> 4) * 0.0625;
+
 	if (!ret)
 	{
-	    t = ((adc_code >> 4) + (adc_code >> 7) >> 1);
+	    //received:  T11 T10 T9 T8 T7 T6 T5 T4 T3 T2 T1 T0 0 0 0 0
+	    t = (adc_code >> 4);
+	    //detect sign extend;
+	    if(t & 0x01<<11){
+	        t |= 0xF800;
+	    }
+	    //scaling
+	    t /= 1.6;
+
 	}
 	else
 	{
 	    t = SHRT_MAX;
 	}
-	return ret;
+	return 0;
  }
 
 /**  Returns the value (2 byte) of the selected internal register
